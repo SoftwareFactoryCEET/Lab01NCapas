@@ -58,7 +58,10 @@ namespace DAL
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            if (_context != null)
+            {
+                _context.Dispose();
+            }
         }
 
         public Task<List<TEntity>> FilterAsync<TEntity>(Expression<Func<TEntity, bool>> criteria) where TEntity : class
@@ -71,9 +74,20 @@ namespace DAL
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateAsync<TEntity>(TEntity toUpdate) where TEntity : class
+        public async Task<bool> UpdateAsync<TEntity>(TEntity toUpdate) where TEntity : class
         {
-            throw new NotImplementedException();
+            bool Result = false;
+            try
+            {
+                _context.Entry<TEntity>(toUpdate).State = EntityState.Modified;
+                Result = await _context.SaveChangesAsync() > 0;
+            }
+            catch (DbException)
+            {
+
+                throw;
+            }
+            return Result;
         }
     }
 }
