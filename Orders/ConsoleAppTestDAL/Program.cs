@@ -5,7 +5,9 @@ using System.Linq.Expressions;
 
 //CreateAsync().GetAwaiter().GetResult();
 //RetreiveAsync().GetAwaiter().GetResult();
-UpdateAsync().GetAwaiter().GetResult();
+//UpdateAsync().GetAwaiter().GetResult();
+FilterAsync().GetAwaiter().GetResult();
+
 
 
 Console.ReadKey();
@@ -100,4 +102,20 @@ static async Task UpdateAsync()
         }
     }
 
+}
+
+
+static async Task FilterAsync()
+{
+    using (var repository = RepositoryFactory.CreateRepository())
+    {
+        Expression<Func<Customer, bool>> criteria = c => c.Country == "USA";
+
+        var customers = await repository.FilterAsync(criteria);
+
+        foreach (var customer in customers)
+        {
+            Console.WriteLine($"Customer:  { customer.FirstName} {customer.LastName}\t from {customer.City}");
+        }
+    }
 }
